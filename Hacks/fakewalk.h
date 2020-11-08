@@ -13,3 +13,4 @@ void Fakewalk(CUserCmd* cmd, C_BaseEntity* local);
 void Slowwalk(CUserCmd* cmd);
 void FakeDuck(CUserCmd* cmd);
 void FakeDuckOverrideView(CViewSetup *pSetup);
+inline bool SlowWalking = false;

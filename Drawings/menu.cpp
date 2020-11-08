@@ -620,8 +620,9 @@ void cMenu::renderAntiAim(int x, int y) {
     this->renderCheckbox(x - 8, y + 270, "Baim if in air", &vars.aimbot.baim_in_air);
     this->renderCheckbox(x - 8, y + 290, "Baim if not accurate", &vars.aimbot.baim_high_inaccuracy);
     this->renderCheckbox(x - 8, y + 310, "Baim if local slow-walk", &vars.aimbot.baim_slow_walk);
-    this->renderCheckbox(x + 235, y + 15, "Fakewalk", &vars.aimbot.fakewalk);
-    this->renderCombo(x + 235, y + 32, 90, 20, "Fakewalk", fakewalk, vars.aimbot.fakewalktype, &vars.fakewalk_opend);
+    this->renderCheckbox(x + 235, y + 15, "Slow Walk", &vars.misc.slow_walk);
+   // this->renderCombo(x + 235, y + 32, 90, 20, "Fakewalk", fakewalk, vars.aimbot.fakewalktype, &vars.fakewalk_opend);
+    this->renderSlider(x + 235, y + 32, 90, "Slow Walk Speed", vars.misc.slow_walk_amount, 100.f, 0.f);
     this->renderCheckbox(x + 235, y + 55, "Auto Scope", &vars.aimbot.autoscope);
     this->renderCheckbox(x + 235, y + 75, "Auto Pistol", &vars.aimbot.autopistol);
     this->renderCheckbox(x + 235, y + 95, "Auto Crouch", &vars.aimbot.autocrouch);

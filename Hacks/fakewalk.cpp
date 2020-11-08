@@ -61,98 +61,38 @@ ButtonCode_t keybind2(){
     }
 }
 
-void Fakewalk(CUserCmd* cmd, C_BaseEntity* local)
-{
-    
-    if(!vars.aimbot.fakewalk)
-        return;
-    
-    if(!pEngine->IsInGame())
-        return;
-    
-    C_BaseEntity* localplayer = (C_BaseEntity*) pEntList->GetClientEntity(pEngine->GetLocalPlayer());
-    if(!localplayer)
-        return;
-    
-    if(vars.misc.fakewalkkey){
-        if (!pInputSystem->IsButtonDown(keybind2()))
-            return;
-    }
-    
-    if(vars.aimbot.fakewalktype == 1){
-        static int iChoked = -1;
-        iChoked++;
-        
-        if (iChoked < 3)
-        {
-            CreateMove::sendPacket = false;
-            cmd->tick_count += 10;
-            cmd += 7 + cmd->tick_count % 2 ? 0 : 1;
-            cmd->forwardmove = cmd->sidemove = 0.f;
-        }else{
-            CreateMove::sendPacket = true;
-            iChoked = -1;
-            pGlobals->frametime *= (local->GetVelocity().Length2D()) / 1.f;
-            cmd->buttons |= local->GetMoveType() == IN_FORWARD;
-        }
-    }
-    
-    if(vars.aimbot.fakewalktype == 2){
-        static int iChoked = 0;
-        
-        iChoked = iChoked > 7  ? 0 : iChoked + 1;
-        cmd->forwardmove = iChoked < 2 || iChoked > 5 ? 0 : cmd->forwardmove;
-        cmd->sidemove = iChoked < 2 || iChoked > 5 ? 0 : cmd->sidemove;
-        
-        CreateMove::sendPacket = iChoked < 1;
-    }
-    
-    if(vars.aimbot.fakewalktype == 3){
-        static int iChoked = -1;
-        iChoked++;
-        
-        if (iChoked < 1)
-        {
-            CreateMove::sendPacket = false;
-            cmd->tick_count += 555;
-            cmd->command_number += 7 + cmd->tick_count % 10 ? 0 : 1; // 5
-            cmd->forwardmove = cmd->sidemove = 0.f;
-        }
-        else
-        {
-            CreateMove::sendPacket = true;
-            iChoked = -1;
-            pGlobals->frametime *= (local->GetVelocity().Length2D()) / 5.f; // 10
-            cmd->buttons |= local->GetMoveType() == IN_FORWARD;
-        }
-    }
-    
-}
+void Slowwalk(CUserCmd* cmd){
 
-void Slowwalk(CUserCmd* cmd)
-{
+    SlowWalking = false;
     C_BasePlayer* localplayer = (C_BasePlayer*) pEntList->GetClientEntity(pEngine->GetLocalPlayer());
     if (!localplayer || !localplayer->GetAlive())
         return;
     if (!vars.misc.slow_walk)
         return;
-    if (!pInputSystem->IsButtonDown(KEY_LSHIFT))
-        return;
+    if(vars.misc.fakewalkkey){
+       if (!pInputSystem->IsButtonDown(keybind2()))
+           return;
+   }
 
-    C_BaseCombatWeapon* activeWeapon = (C_BaseCombatWeapon*) pEntList->GetClientEntityFromHandle(localplayer->GetActiveWeapon());
-        if (activeWeapon) {
-
-
-                        float speed = 0.1f;
-                                float max_speed = activeWeapon->GetCSWpnData1()->GetMaxPlayerSpeed();
-                                float ratio = max_speed / 250.0f;
-                                speed *= ratio;
-                        
-
-
-                        cmd->forwardmove *= speed;
-                        cmd->sidemove *= speed;
-        }
+    SlowWalking = true;
+    Vector ViewAngle;
+    pEngine->GetViewAngles(ViewAngle);
+        
+    static Vector oldOrigin = localplayer->GetAbsOrigin( );
+    Vector velocity = ( localplayer->GetVecOrigin( )-oldOrigin )
+                            * (1.f/pGlobals->interval_per_tick);
+    oldOrigin = localplayer->GetAbsOrigin( );
+    float speed  = velocity.Length( );
+    
+    if(speed > vars.misc.slow_walk_amount )
+    {
+        cmd->forwardmove = 0;
+        cmd->sidemove = 0;
+        CreateMove::sendPacket = false;
+    }
+    else {
+        CreateMove::sendPacket = true;
+    }
 }
 
 void FakeDuck(CUserCmd *cmd)

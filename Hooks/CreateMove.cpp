@@ -190,7 +190,7 @@ bool hkCreateMove(void* thisptr, float flSampleInput, CUserCmd* cmd)
         CreateMove::sendPacket =  true;
         
         FakeLag(cmd);
-        Fakewalk(cmd, local);
+    //    Fakewalk(cmd, local);
         DoAntiAim(cmd, weapon);
         FakeDuck(cmd);
         //Desync(cmd, weapon);

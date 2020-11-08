@@ -1,4 +1,5 @@
 #include "main.h"
+#include "antiaim.h"
 
 matrix3x4_t localfakelagmatrix[128];
 
@@ -592,7 +593,48 @@ void hkDrawModelExecute(void* thisptr, void* context, void *state, const ModelRe
                        //     return firstLit;
                     }();
                     
+                    if (vars.misc.thirdperson && !local->IsScoped() && vars.misc.antiaim && entity == local){
+                        Vector BonePos;
+                        Vector OutPos;
+                        QAngle real, ang,forward;
+                        C_BasePlayer* localplayer = (C_BasePlayer*) pEntList->GetClientEntity(pEngine->GetLocalPlayer());
+                        
+                        float fakeangle = AntiAim::fakeAngle.y - AntiAim::realAngle.y;                      static  matrix3x4_t BoneMatrix[128];
+                        for (int i = 0; i < 128; i++)
+                        {
+                            
+                            AngleMatrix(Vector(0, fakeangle, 0), BoneMatrix[i]);
+                            MatrixMultiply(BoneMatrix[i], pCustomBoneToWorld[i]);
+                            BonePos = Vector(pCustomBoneToWorld[i][0][3], pCustomBoneToWorld[i][1][3], pCustomBoneToWorld[i][2][3]) - pInfo.origin;
+                            VectorRotate(BonePos, Vector(0, fakeangle, 0), OutPos);
+                            OutPos += pInfo.origin;
+                            BoneMatrix[i][0][3] = OutPos.x;
+                            BoneMatrix[i][1][3] = OutPos.y;
+                            BoneMatrix[i][2][3] = OutPos.z;
+                        }
                     
+                        materialLocal->AlphaModulate(vars.visuals.localchams_alpha / 255.f);
+                        materialLocal->ColorModulate(ScopedColors);
+                        pModelRender->ForcedMaterialOverride(materialLocal);
+                        CallOriginalModel(thisptr, context, state, pInfo, BoneMatrix);
+                        pModelRender->ForcedMaterialOverride(nullptr);
+                                        }
+                    static matrix3x4_t fakeBoneMatrix[128];
+                    
+                    static matrix3x4_t BodyBoneMatrix[128];
+                    
+                    if (vars.misc.fakeduck && pInputSystem->IsButtonDown(KEY_X)){
+                            if (CreateMove::sendPacket){
+                                memcpy(BodyBoneMatrix, fakeBoneMatrix, sizeof(matrix3x4_t)*128);
+                            }
+                        }
+                        else if (vars.misc.fakelag){
+                            if(CreateMove::sendPacket){
+                                memcpy(BodyBoneMatrix, fakeBoneMatrix, sizeof(matrix3x4_t)*128);
+                            }
+                        }else {
+                            memcpy(BodyBoneMatrix, pCustomBoneToWorld, sizeof(matrix3x4_t)*128);
+                        }
                     if (CreateMove::sendPacket == true)
                         local->SetupBones(localfakelagmatrix, 128, BONE_USED_BY_HITBOX, pGlobals->curtime);
                     
