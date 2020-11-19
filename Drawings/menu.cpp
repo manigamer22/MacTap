@@ -568,6 +568,7 @@ void cMenu::renderAntiAim(int x, int y) {
     vector<string> tp;  // Real Yaw
     vector<string> FakeYaw; // Fake Yaw
     vector<string> hitscan;
+    vector<string> Slowwalk;
    
     // Pitch
     Pitch.push_back("None");
@@ -586,6 +587,8 @@ void cMenu::renderAntiAim(int x, int y) {
     
     // Fake Yaw
     FakeYaw.push_back("None");
+    Slowwalk.push_back("None");
+    Slowwalk.push_back("Safe");
     
 
     hitscan.push_back("off");
@@ -633,6 +636,7 @@ void cMenu::renderAntiAim(int x, int y) {
     //this->renderCheckbox(x + 235, y + 275, "Slow walk (SHIFT)", &vars.aimbot.autoslow);
     this->renderCheckbox(x + 235, y + 295, "Airstuck (KEY_Z)", &vars.misc.airstuck);
     this->renderCheckbox(x + 235, y + 205, "Yaw Resolver", &vars.aimbot.Yawresolver);
+    this->renderCombo(x + 235, y + 235, 150, 20, "Off", Slowwalk, vars.misc.slowalkmode, &vars.Slowwalk);
     //this->renderCheckbox(x + 235, y + 230, "Legit AA", &vars.misc.legitaa);
     this->renderCheckbox(x + 444, y + 15, "Anti-Aim", &vars.misc.antiaim);
     this->renderCheckbox(x + 444, y + 35, "Show Real Angles", &vars.misc.thirdpersonmode);
@@ -883,6 +887,7 @@ void cMenu::renderMisc(int x, int y) {
     this->renderCheckbox(x + 444, y + 35, "Adaptive", &vars.misc.adaptive);
     //this->renderCheckbox(x + 235, y + 220, "Fake Lag Chams", &vars.misc.flagchams);
     this->renderSlider(x + 444, y + 55, 115, "Fake Lag Factor", vars.misc.fakelagfactor, 16, 0);
+    this->renderSlider(x + 444, y + 55, 115, "Fake Lag Factor", vars.misc.fakelagfactor, 50, 0);
     this->renderCheckbox(x + 444, y + 85, "Inverse Ragdoll Gravity", &vars.misc.meme);
     this->renderCheckbox(x + 444, y + 105, "HvH Viewmodel", &vars.misc.hvhviewmodel);
     //this->renderCombo(x + 474, y + 95,  150, 20, "v1", fakeping, vars.misc.fakepingtype, &vars.fakeping_opend);
