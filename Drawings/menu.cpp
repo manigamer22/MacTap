@@ -586,7 +586,6 @@ void cMenu::renderAntiAim(int x, int y) {
     
     // Fake Yaw
     FakeYaw.push_back("None");
-    FakeYaw.push_back("TEST AA");
     
 
     hitscan.push_back("off");
