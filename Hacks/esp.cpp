@@ -333,14 +333,13 @@ void DrawSpread(C_BaseEntity* local) {
     }
 }
 
+
 void DrawAngles(C_BaseEntity* local)
 {
     
     if(!pEngine->IsInGame())
         return;
     
-    if(!vars.visuals.antiaim_indicator )
-        return;
     
     if(!vars.visuals.aaline)
         return;
@@ -354,6 +353,7 @@ void DrawAngles(C_BaseEntity* local)
     src3D = local->GetVecOrigin();
     
     AngleVectors(Vector(0, AntiAim::fakeAngle.y, 0), &forward);
+   // AngleVectors3(QAngle(0, fake.y, 0), forward);
     dst3D = src3D + (forward * 45.f);
     
     ray.Init(src3D, dst3D);
@@ -369,7 +369,8 @@ void DrawAngles(C_BaseEntity* local)
         draw->drawstring(dst.x, dst.y, Color::Blue(), espfont, "FAKE");
     
     
-    AngleVectors(Vector(0, local->GetLowerBodyYawTarget(), 0), &forward);
+    AngleVectors(Vector(0, AntiAim::realAngle.y, 0), &forward);
+     //AngleVectors3(QAngle(0, actual.y, 0), forward);
     dst3D = src3D + (forward * 45.f);
     
     ray.Init(src3D, dst3D);
@@ -383,6 +384,22 @@ void DrawAngles(C_BaseEntity* local)
     
     if (vars.visuals.anglelinenames)
         draw->drawstring(dst.x, dst.y, Color(0, 255, 0, 255), espfont, "REAL");
+    
+    AngleVectors(Vector(0, local->GetAnimState()->currentFeetYaw, 0), &forward);
+       dst3D = src3D + (forward * 45.f);
+       
+       ray.Init(src3D, dst3D);
+       
+       pEngineTrace->TraceRay(ray, 0, &filter, &tr);
+       
+       if (!WorldToScreen(src3D, src) || !WorldToScreen(tr.endpos, dst))
+           return;
+       
+       draw->Line(src.x, src.y, dst.x, dst.y, Color(225, 225, 80,255));
+       
+       if (vars.visuals.anglelinenames)
+           draw->drawstring(dst.x, dst.y,Color(225, 225, 80,255), espfont, "FEET");
+    
     AngleVectors(Vector(0, local->GetLowerBodyYawTarget(), 0), &forward);
        dst3D = src3D + (forward * 45.f);
        

@@ -41,6 +41,7 @@ public:
     bool fakewalk_opend;
     bool indicatorAA_opend;
     bool freestand_opend;
+    bool Slowwalk;
     // For aa corrections
     bool playerlist_opend_x[64];
     bool playerlist_opend_y[64];
@@ -166,6 +167,7 @@ public:
         bool backtrack = false;
         bool autoslow = false;
          int skinssg = 0;
+        bool invert =  false;
         
         bool freestanding = false;
         
@@ -408,6 +410,7 @@ public:
         int AaaY            = 0;        // Air  Yaw Moving antiaim
         int Yoffset         = 0;        // Yaw Offset
         int FYoffset        = 0;        // Fake Yaw Offset
+        int slowalkmode     = 0;
         bool antiResolverFlip= false;
         bool resolverfucker= false;
         bool turbojizzer = false;
@@ -415,7 +418,11 @@ public:
         bool lby_spin = false;
         bool tank = false;
         float asusalpha      = .0;
-        
+        int fakeheadkey = 107;
+        bool fakehead = false;
+        int jitterAA = 0;
+        int jitterspeed = 0;
+
     }misc;
     
     class cColors

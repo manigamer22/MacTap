@@ -33,6 +33,19 @@ void RemoveFlash(ClientFrameStage_t stage)
     }
     
 }
+void PostProcces()
+{
+    static auto mat_postprocess_enable = pCvar->FindVar("mat_postprocess_enable");
+    
+    if (vars.misc.noscope)
+    {
+        mat_postprocess_enable->SetValue(0);
+    }
+    else
+    {
+        mat_postprocess_enable->SetValue(1);
+    }
+}
 void hkFrameStage(void* thisptr, ClientFrameStage_t curStage)
 {
     auto* local = pEntList->GetClientEntity(pEngine->GetLocalPlayer());

@@ -61,9 +61,8 @@ ButtonCode_t keybind2(){
     }
 }
 
-void Slowwalk(CUserCmd* cmd){
-
-    SlowWalking = false;
+void Slowwalk(CUserCmd* cmd)
+{
     C_BasePlayer* localplayer = (C_BasePlayer*) pEntList->GetClientEntity(pEngine->GetLocalPlayer());
     if (!localplayer || !localplayer->GetAlive())
         return;
@@ -74,51 +73,78 @@ void Slowwalk(CUserCmd* cmd){
            return;
    }
 
-    SlowWalking = true;
+    C_BaseCombatWeapon* activeWeapon = (C_BaseCombatWeapon*) pEntList->GetClientEntityFromHandle(localplayer->GetActiveWeapon());
     Vector ViewAngle;
-    pEngine->GetViewAngles(ViewAngle);
-        
+        pEngine->GetViewAngles(ViewAngle);
+if ( vars.misc.slowalkmode == 1){
     static Vector oldOrigin = localplayer->GetAbsOrigin( );
-    Vector velocity = ( localplayer->GetVecOrigin( )-oldOrigin )
-                            * (1.f/pGlobals->interval_per_tick);
-    oldOrigin = localplayer->GetAbsOrigin( );
-    float speed  = velocity.Length( );
-    
+        Vector velocity = ( localplayer->GetVecOrigin( )-oldOrigin )
+                                                        * (1.f/pGlobals->interval_per_tick);
+        oldOrigin = localplayer->GetAbsOrigin( );
+        float speed  = velocity.Length( );
+
     if(speed > vars.misc.slow_walk_amount )
-    {
-        cmd->forwardmove = 0;
-        cmd->sidemove = 0;
-        CreateMove::sendPacket = false;
-    }
-    else {
-        CreateMove::sendPacket = true;
-    }
+        {
+                cmd->forwardmove = 0;
+                cmd->sidemove = 0;
+                CreateMove::sendPacket = false;
+        }
+        else {
+                CreateMove::sendPacket = true;
+        }
+}else {
+   if (activeWeapon) {
+
+
+                        float speed = 0.1f;
+                                float max_speed = activeWeapon->GetCSWpnData1()->GetMaxPlayerSpeed();
+                                float ratio = max_speed / 250.0f;
+                                speed *= ratio;
+
+
+                        cmd->forwardmove *= speed;
+                        cmd->sidemove *= speed;
+        }
 }
 
+}
+
+
+static bool FirstDuck = false;
+int choked;
 void FakeDuck(CUserCmd *cmd)
 {
 
-    if (!pInputSystem->IsButtonDown(KEY_X))
+    C_BasePlayer* localplayer = (C_BasePlayer*) pEntList->GetClientEntity(pEngine->GetLocalPlayer());
+    if (!localplayer || !localplayer->GetAlive())
         return;
 
-    CreateMove::sendPacket = false;
+   
 
-    static bool counter = false;
-    static int counters = 0;
+    if (pInputSystem->IsButtonDown(KEY_X)){
+                cmd->buttons |= IN_BULLRUSH;
+        int amount = 14;
+                if (choked <= amount / 2){
+                        cmd->buttons &= ~IN_DUCK;
+            if (choked > (amount / 3) + 1 )
+                localplayer->GetAnimState()->duckProgress = 0.f;
+            else
+                localplayer->GetAnimState()->duckProgress = 1.0;
+                }else{
+                        cmd->buttons |= IN_DUCK;
+            localplayer->GetAnimState()->duckProgress = 1.0;
+               } if (choked < amount){
+            choked++;
+                        CreateMove::sendPacket = false;   // choke
+        }
+                else{
+                       CreateMove::sendPacket = true;    // send packet
+               choked = 0;
+        }
 
-    if (counters % 14 == 0)
-        counter = true;
-    else if (counters % 14 == 6)
-        CreateMove::sendPacket = true;
-    else if (counters % 14 == 7)
-        counter = false;
+//localplayer->GetAnimState()->duckProgress = 1.0; //memes
 
-    counters++;
-
-    if (counter)
-        cmd->buttons |= IN_DUCK;
-    else
-        cmd->buttons &= ~IN_DUCK;
+}
 }
 
 void FakeDuckOverrideView(CViewSetup *pSetup)

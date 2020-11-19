@@ -4,7 +4,7 @@ void clan_tag()
     if(!vars.misc.clantag)
         return;
     
-    static std::string cur_clantag = "      AIMJUNKIES.COM";
+    static std::string cur_clantag = "      MACTAP.CC";
     
     static int i = 0;
     
